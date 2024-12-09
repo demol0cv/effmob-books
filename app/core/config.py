@@ -1,5 +1,5 @@
 from pydantic import BaseModel, PostgresDsn
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
@@ -14,10 +14,22 @@ class RunConfig(BaseModel):
 
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
+    books: str = "/books"
+    authors: str = "/authors"
+    borrows: str = "/borrows"
 
 class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
 
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        env_prefix="APP_CONFIG__",
+        env_file=".env"
+    )
+
+
 settings = Settings()
+print(settings.db.url)

@@ -2,7 +2,13 @@
 
 from fastapi import APIRouter
 
+from core.schemas.error import ErrorBase
+
 router = APIRouter(tags=["Books"])
+router.responses = {
+    404: {"model": ErrorBase, "description": "Not Found"}
+}
+authors = ["author1", "author2", "author3", "author4", "author5"]
 
 books = ["book1", "book2", "book3", "book4", "book5"]
 

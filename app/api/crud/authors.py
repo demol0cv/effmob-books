@@ -7,7 +7,11 @@ from core.models import Author
 from core.schemas.author import AuthorCreate, AuthorRead
 
 
-async def get_authors(session: AsyncSession, offset: int = 0, limit: int=5) -> Sequence[Author]:
+async def get_authors(
+        session: AsyncSession,
+        offset: int = 0,
+        limit: int = 15
+) -> Sequence[Author]:
     query = select(Author).order_by(Author.last_name).offset(offset).limit(limit)
     result = await session.scalars(query)
     return result.all()

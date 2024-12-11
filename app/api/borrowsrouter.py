@@ -8,8 +8,6 @@ router = APIRouter(tags=["Borrows"])
 router.responses = {
     404: {"model": ErrorBase, "description": "Not Found"}
 }
-authors = ["author1", "author2", "author3", "author4", "author5"]
-
 
 @router.get("")
 async def get_borrows_list():

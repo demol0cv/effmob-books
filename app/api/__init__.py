@@ -9,7 +9,10 @@ from .booksrouter import router as books_router
 from .authorsrouter import router as authors_router
 from .borrowsrouter import router as borrows_router
 
-router = APIRouter()
+
+router = APIRouter(
+    prefix=settings.api.prefix,
+)
 
 router.include_router(
     books_router,

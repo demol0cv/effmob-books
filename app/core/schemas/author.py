@@ -16,3 +16,5 @@ class AuthorCreate(AuthorBase):
 class AuthorRead(AuthorBase):
     id: int
 
+class AuthorUpdate(AuthorBase):
+    pass

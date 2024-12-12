@@ -4,10 +4,10 @@ import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.crud.authors import get_authors, create_author, get_one_author
+from api.crud import AuthorsCrud
 from core.errors import APIException
 from core.models import db_helper, Author
-from core.schemas.author import AuthorRead, AuthorCreate
+from core.schemas.author import AuthorRead, AuthorCreate, AuthorUpdate
 from core.schemas.error import ErrorBase
 
 router = APIRouter(tags=["Authors"])
@@ -22,7 +22,7 @@ async def get_authors_list(
         offset: int = 0,
         limit: int = 15,
 ):
-    authors = await get_authors(
+    authors = await AuthorsCrud.get_authors(
         session=session,
         offset=offset,
         limit=limit
@@ -35,7 +35,7 @@ async def get_author_info(
         author_id: int
 ):
     try:
-        author = await get_one_author(
+        author = await AuthorsCrud.get_one_author(
             session=session,
             author_id=author_id
         )
@@ -52,15 +52,24 @@ async def add_author(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         author: AuthorCreate,
 ) -> Author:
-    author = await create_author(
+    author = await AuthorsCrud.create_author(
         session=session,
         author_create=author
     )
     return author
 
-@router.put("/{id}")
-async def update_author(id: int, new_name: str):
-    authors[id] = new_name
+@router.put("/{author_id}", response_model=AuthorUpdate)
+async def update_author(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    author_id: int,
+    author_update: AuthorUpdate,
+    )-> Author:
+    author = await AuthorsCrud.update_author(
+        session=session,
+        author_id=author_id,
+        author_update=author_update,
+    )
+    return author
 
 @router.delete("/{id}")
 async def remove_author(id:int):

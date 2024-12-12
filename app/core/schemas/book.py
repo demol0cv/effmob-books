@@ -14,3 +14,5 @@ class BookCreate(BookBase):
 class BookRead(BookBase):
     id: int
 
+class BookUpdate(BookBase):
+    pass

@@ -1,10 +1,13 @@
 ## Links
 - https://docs.sqlalchemy.org/en/20/core/engines.html
 - https://fastapi.tiangolo.com/advanced/events/#lifespan
+- https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic
 
 ## Приложение
 - swagger: http://0.0.0.0:8000/docs#/
 - api: http://0.0.0.0:8000/api/
+- 
+
 ## Эндпоинты
 ### Эндпоинты для книг:
 - Добавление книги (POST /books).

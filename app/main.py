@@ -10,6 +10,9 @@ from core.models import db_helper
 from core.schemas.error import ErrorBase
 
 
+
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # start

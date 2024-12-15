@@ -4,7 +4,7 @@ import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.crud import AuthorsCrud
+from api.crud import authors_crud
 from core.errors import APIException
 from core.models import db_helper, Author
 from core.schemas.author import AuthorRead, AuthorCreate, AuthorUpdate
@@ -14,7 +14,7 @@ router = APIRouter(tags=["Authors"])
 router.responses = {
     404: {"model": ErrorBase, "description": "Not Found"}
 }
-authors = ["author1", "author2", "author3", "author4", "author5"]
+
 
 @router.get("", response_model=list[AuthorRead])
 async def get_authors_list(
@@ -22,7 +22,7 @@ async def get_authors_list(
         offset: int = 0,
         limit: int = 15,
 ):
-    authors = await AuthorsCrud.get_authors(
+    authors = await authors_crud.get_all_items(
         session=session,
         offset=offset,
         limit=limit
@@ -32,19 +32,19 @@ async def get_authors_list(
 @router.get("/{id}", response_model=AuthorRead)
 async def get_author_info(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        author_id: int
+        id: int
 ):
     try:
-        author = await AuthorsCrud.get_one_author(
+        author = await authors_crud.get_one_item(
             session=session,
-            author_id=author_id
+            id=id,
         )
         return author
     except sqlalchemy.exc.NoResultFound:
         raise APIException(
             code=404,
             error="Author not found",
-            details=f"Author with id={author_id} not found"
+            details=f"Author with id={id} not found"
         )
 
 @router.post("", response_model=AuthorCreate)
@@ -52,25 +52,48 @@ async def add_author(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         author: AuthorCreate,
 ) -> Author:
-    author = await AuthorsCrud.create_author(
+    author = await authors_crud.create_author(
         session=session,
         author_create=author
     )
+    
     return author
+    
 
-@router.put("/{author_id}", response_model=AuthorUpdate)
+@router.put("/{id}", response_model=AuthorUpdate)
 async def update_author(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    author_id: int,
+    id: int,
     author_update: AuthorUpdate,
     )-> Author:
-    author = await AuthorsCrud.update_author(
+    author = await authors_crud.update_author(
         session=session,
-        author_id=author_id,
+        id=id,
         author_update=author_update,
     )
-    return author
+    if author:
+        return author
+    else:
+        raise APIException(
+            code=404,
+            error="Автор не найден",
+            details=f"Автор с ID {id} не найден"
+        )
 
-@router.delete("/{id}")
-async def remove_author(id:int):
-    return authors.pop(id)
+@router.delete("/{id}", response_model=AuthorUpdate)
+async def remove_author(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    id: int,
+) -> Author:
+    author = await authors_crud.remove_item(
+        session=session,
+        id=id,
+    )
+    if author:
+        return author
+    else:
+        raise APIException(
+            code=404,
+            error="Автор не найден",
+            details=f"Автор с ID {id} не найден",
+        )

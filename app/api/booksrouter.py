@@ -4,7 +4,7 @@ import sqlalchemy.exc
 from fastapi import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.crud import BooksCrud
+from api.crud import books_crud
 from core.errors import APIException
 from core.models import db_helper, Book
 from core.schemas.book import BookRead, BookCreate, BookBase, BookUpdate
@@ -23,63 +23,56 @@ async def get_books_list(
         offset: int = 0,
         limit: int = 15,
 ):
-    books = await BooksCrud.get_all_books(
+    books = await books_crud.get_all_items(
         session=session,
         offset=offset,
         limit=limit,
     )
     return books
 
-@router.get("/{book_id}", response_model=BookRead)
+@router.get("/{id}", response_model=BookRead)
 async def get_book_info(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        book_id: int,
-):
-    try:
-        book = await BooksCrud.get_one_book(
-            session=session,
-            book_id=book_id,
-        )
-        return book
-    except sqlalchemy.exc.NoResultFound:
-        raise APIException(
-            code=404,
-            error="Book not found",
-            details=f"Book with id={book_id} not found"
-        )
+        id: int,
+) -> Book | None:
+    book = await books_crud.get_one_item(
+        session=session,
+        id=id,
+    )
+    return book
 
 @router.post("", response_model=BookCreate)
 async def add_book(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         book: BookCreate,
 ) -> Book:
-    book = await BooksCrud.create_book(
+    book = await books_crud.create_book(
         session=session,
         book_create=book,
     )
     return book
 
 
-@router.put("/{book_id}", response_model=BookBase)
+@router.put("/{id}", response_model=BookBase)
 async def update_book(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        book_id: int,
+        id: int,
         book_update: BookUpdate,
 ):
-    book = await BooksCrud.update_book(
+    book = await books_crud.update_book(
         session=session,
-        book_id=book_id,
+        id=id,
         book_update=book_update,
     )
     return book
 
-@router.delete("{book_id}")
+@router.delete("{id}")
 async def remove_book(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    book_id: int,
+    id: int,
     ):
-    book = await BooksCrud.remove_book(
+    book = await books_crud.remove_item(
         session=session,
-        book_id=book_id,
+        id=id,
     )
     return book

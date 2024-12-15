@@ -1,13 +1,15 @@
 from datetime import datetime, date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
+from .base import ItemBase
 
-class AuthorBase(BaseModel):
-    first_name: str
-    last_name: str
+
+class AuthorBase(ItemBase):
+    first_name: str = Field(example="Name")
+    last_name: str = Field(example="LastName")
     birthdate: date
 
 class AuthorCreate(AuthorBase):

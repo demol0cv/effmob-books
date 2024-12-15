@@ -1,0 +1,19 @@
+unsafe-fixes = true
+line-length = 128
+target-version = "py311"
+ignore = ["ANN002","ANN003"]
+exclude = [".venv","__pycache__"]
+
+[lint]
+fixable = ["Q000","COM812", "I001", "D205", "D400", "D413", "W291", "W292"]
+
+[lint.pep8-naming]
+classmethod-decorators = [
+    # Allow Pydantic's `@validator` decorator to trigger class method treatment.
+    "pydantic.validator",
+    # Allow SQLAlchemy's dynamic decorators, like `@field.expression`, to trigger class method treatment.
+    "declared_attr",
+    "expression",
+    "comparator",
+    "abstractmethod"
+]

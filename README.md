@@ -5,10 +5,25 @@
 - https://fastapi.tiangolo.com/advanced/events/#lifespan
 - https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic
 
+## Запуск
+Выполнить:
+```bash
+docker-compose up --build
+```
+Остановить нажав Ctrl+C
+и снова запустить - выполнится миграция данных и создадутся таблицы (это проблема, нужно дорабатывать сценарий запуска миграции)
+Подключение к postgres: admin:adminpass@db:5432/effmob-books-db
+### Fake data
+После успешного запуска и выполнения миграций, выполнить:
+```bash
+docker exec effmob_books python3 /app/fill_db.py
+```
+чтобы заполнить таблицы фейковыми данными. Заполнятся таблицы authors и books
+
 ## Приложение
 - swagger: http://0.0.0.0:8000/docs#/
 - api: http://0.0.0.0:8000/api/
-- 
+
 
 ## Эндпоинты
 ### Эндпоинты для книг:

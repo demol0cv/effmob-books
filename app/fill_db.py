@@ -17,7 +17,7 @@ book_title =lambda: " ".join(fake.words(nb=3)).title()
 description = lambda: " ".join(fake.words(nb=15)).capitalize()
 
 class DbUtils:
-    async def fill_fake_data():
+    async def fill_fake_data(self):
         async with db_helper.session_factory() as sess:
             for _ in range(53):
                 name = fake.first_name()

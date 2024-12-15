@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: effmob_books
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_CONFIG__DB__URL=postgresql+asyncpg://admin:adminpass@db:5432/effmob-books-db
+    depends_on:
+      - db
+
+
+  db:
+    image: postgres:15
+    container_name: effmob_postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpass
+      POSTGRES_DB: effmob-books-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/tmp/
+
+volumes:
+  postgres_data:

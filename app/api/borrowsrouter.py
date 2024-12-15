@@ -10,7 +10,7 @@ from api.crud import borrows_crud
 from api.crud.borrows import BorrowsCrud
 from core.errors import APIException
 from core.models.borrow import Borrow
-from core.schemas.borrow import BorrowCreate, BorrowRead
+from core.schemas.borrow import BorrowCreate, BorrowRead, BorrowReturn
 from core.models import db_helper
 from core.schemas.error import ErrorBase
 
@@ -55,6 +55,22 @@ async def add_borrow(
     )
     return new_borrow
 
-@router.patch("/{id}/return", )
-async def return_borrow():
-    pass
+@router.patch("/{id}/return", response_model=BorrowReturn)
+async def return_borrow(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    id: int,
+    borrow_return: BorrowReturn,
+):
+    borrow = await borrows_crud.borrow_return(
+        session=session,
+        id=id,
+        borrow_return=borrow_return,
+    )
+    if borrow is None:
+        raise APIException(
+            404,
+            error="Не найдена активная выдача",
+            details="Не найдена активная выдача",
+        )
+    else:
+        return borrow

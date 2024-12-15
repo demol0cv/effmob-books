@@ -13,6 +13,7 @@ __all__ = [
 ]
 class BooksCrud(CRUDBase):
     async def create_book(
+            self,
             session: AsyncSession,
             book_create: BookCreate,
     ) -> Book:
@@ -21,11 +22,13 @@ class BooksCrud(CRUDBase):
         await session.commit()
         return book
 
+
     async def update_book(
+            self,
             session: AsyncSession,
             book_id: int,
             book_update: BookUpdate,
-    ):
+    ) -> Book | None:
 
         result = await session.execute(
             select(Book).where(Book.id == book_id),

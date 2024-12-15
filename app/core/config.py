@@ -1,3 +1,4 @@
+import os
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,5 +32,6 @@ class Settings(BaseSettings):
     )
 
 
+print(os.getenv("APP_CONFIG__DB__URL"))
 settings = Settings()
-# print(settings.db.url)
+print(settings.db.url)

@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
+from .base import ItemBase
 
-class BookBase(BaseModel):
+
+class BookBase(ItemBase):
     name: str
     description: str
     author_id: int

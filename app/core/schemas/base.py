@@ -6,4 +6,14 @@ from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 
 class ItemBase(BaseModel):
-    pass
+    id: int
+
+class ListItemsBase(BaseModel):
+    items_list: list[ItemBase]
+    page: int
+    per_page: int
+
+    @property
+    def count(self) -> int:
+        
+        return len(self.items_list)

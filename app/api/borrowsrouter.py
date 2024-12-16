@@ -1,18 +1,17 @@
 
 
 from typing import Annotated, Optional
+
+from core.errors import APIException
+from core.models import Borrow, db_helper
+from core.schemas import BorrowCreate, BorrowRead, BorrowReturn, BorrowsListBase
+from core.schemas.error import ErrorBase
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# from api.crud.borrows import BorrowsCrud
 from api.crud import borrows_crud
 from api.crud.borrows import BorrowsCrud
-from core.errors import APIException
-from core.models.borrow import Borrow
-from core.schemas.borrow import BorrowCreate, BorrowRead, BorrowReturn
-from core.models import db_helper
-from core.schemas.error import ErrorBase
 
 router = APIRouter(tags=["Borrows"])
 
@@ -20,18 +19,25 @@ router.responses = {
     404: {"model": ErrorBase, "description": "Not Found"},
 }
 
-@router.get("", response_model=list[BorrowRead])
+@router.get("", response_model=BorrowsListBase)
 async def get_borrows_list(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    offset: int = 0,
-    limit: int = 15,
+    page: int = 0,
+    per_page: int = 15,
 ):
     borrows = await borrows_crud.get_all_items(
         session=session,
-        offset=offset,
-        limit=limit,
+        page=page,
+        per_page=per_page,
     )
-    return borrows
+    borrows = [b.__dict__ for b in borrows]
+    result = BorrowsListBase(
+        items_list=borrows,
+        page=page,
+        per_page=per_page,
+
+    )
+    return result
 
 @router.get("/{id}", response_model=Optional[BorrowRead])
 async def get_borrow_info(

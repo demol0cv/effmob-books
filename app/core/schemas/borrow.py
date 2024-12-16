@@ -4,6 +4,8 @@ from typing import Optional
 from faker import Faker
 from pydantic import BaseModel, Field
 
+from core.schemas.base import ListItemsBase
+
 fake = Faker()
 
 class BorrowBase(BaseModel):
@@ -12,6 +14,11 @@ class BorrowBase(BaseModel):
     is_active: bool = Field(default=False)
     borrow_date: datetime = Field(readOnly=True)
     return_date: datetime | None = Field(default=None, readOnly=True)
+
+class BorrowsListBase(ListItemsBase):
+    items_list: list[BorrowBase]
+
+
 
 class BorrowCreate(BorrowBase):
     is_active: bool = Field(default=True)

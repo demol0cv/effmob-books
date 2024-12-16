@@ -1,13 +1,16 @@
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Sequence
 
+from pydantic import Field
 import sqlalchemy.exc
 from core.errors import APIException
 from core.models import Book, db_helper
+from core.models.base import Base
 from core.schemas import ApiError, BookCreate, BookRead, BookUpdate
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.crud import books_crud
+from core.schemas import BooksListRead
 
 router = APIRouter(tags=["Books"])
 router.responses = {
@@ -15,18 +18,23 @@ router.responses = {
 }
 
 
-@router.get("", response_model=list[BookRead])
+@router.get("", response_model=BooksListRead)
 async def get_books_list(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        offset: int = 0,
-        limit: int = 15,
-):
+        page: int = 0,
+        per_page: int = 15,
+) -> Sequence[Base]:
     books = await books_crud.get_all_items(
         session=session,
-        offset=offset,
-        limit=limit,
+        page=page,
+        per_page=per_page,
     )
-    return books
+    result = BooksListRead(
+        items_list=[b.__dict__ for b in books],
+        page=page,
+        per_page=per_page,
+    )
+    return result
 
 @router.get("/{id}", response_model=Optional[BookRead])
 async def get_book_info(

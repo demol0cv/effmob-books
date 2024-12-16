@@ -9,6 +9,7 @@ from core.errors import APIException
 from core.models import db_helper, Author
 from core.schemas import AuthorRead, AuthorCreate, AuthorUpdate
 from core.schemas import ApiError
+from core.schemas.author import ListAuthorsBase
 
 router = APIRouter(tags=["Authors"])
 router.responses = {
@@ -16,18 +17,23 @@ router.responses = {
 }
 
 
-@router.get("", response_model=list[AuthorRead])
+@router.get("", response_model=ListAuthorsBase)
 async def get_authors_list(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        offset: int = 0,
-        limit: int = 15,
+        page: int = 0,
+        per_page: int = 15,
 ):
     authors = await authors_crud.get_all_items(
         session=session,
-        offset=offset,
-        limit=limit
+        page=page,
+        per_page=per_page
     )
-    return authors
+    result = ListAuthorsBase(
+        items_list=[a.__dict__ for a in authors],
+        page=page,
+        per_page=per_page,
+    )   
+    return result
 
 @router.get("/{id}", response_model=Optional[AuthorRead])
 async def get_author_info(

@@ -1,3 +1,4 @@
+from pydantic import Field
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -27,10 +28,11 @@ class CRUDBase:
     async def get_all_items(
             self,
             session: AsyncSession,
-            offset: int = 0,
-            limit: int = 15,
+            page: int = 0,
+            per_page: int = 15,
     ) -> Sequence[Base]:
-        query = select(self.model).order_by(self.model.id).offset(offset).limit(limit)
+        offset = page*per_page
+        query = select(self.model).order_by(self.model.id).offset(offset).limit(per_page)
         result = await session.scalars(query)
         return result.all()
     

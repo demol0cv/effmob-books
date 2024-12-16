@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 
-from .base import ItemBase
+from core.models.book import Book
+
+from .base import ItemBase, ListItemsBase
 
 
 class BookBase(ItemBase):
@@ -9,12 +11,19 @@ class BookBase(ItemBase):
     author_id: int
     count: int
 
+class ListBooksBase(ListItemsBase):
+    items_list: list[BookBase]
+
+
+class BooksListRead(ListBooksBase):
+    pass
+
 
 class BookCreate(BookBase):
     pass
 
 class BookRead(BookBase):
-    id: int
+    pass
 
 class BookUpdate(BookBase):
     pass

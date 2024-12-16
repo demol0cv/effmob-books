@@ -15,4 +15,4 @@ async def fill_fake_data(
     authors_count: Optional[int] = None,
     books_count: Optional[int] = None,
 ):
-    DbUtils().fill_fake_data(authors_count=authors_count, books_count=books_count)
+    await DbUtils().fill_fake_data(authors_count=authors_count, books_count=books_count)

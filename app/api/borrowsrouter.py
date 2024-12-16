@@ -1,6 +1,6 @@
 
 
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,7 +33,7 @@ async def get_borrows_list(
     )
     return borrows
 
-@router.get("/{id}", response_model=BorrowRead)
+@router.get("/{id}", response_model=Optional[BorrowRead])
 async def get_borrow_info(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     id: int,
@@ -44,7 +44,7 @@ async def get_borrow_info(
     )
     return borrow
 
-@router.post("", response_model=BorrowCreate)
+@router.post("", response_model=Optional[BorrowCreate])
 async def add_borrow(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     borrow_create: BorrowCreate,
@@ -55,7 +55,7 @@ async def add_borrow(
     )
     return new_borrow
 
-@router.patch("/{id}/return", response_model=BorrowReturn)
+@router.patch("/{id}/return", response_model=Optional[BorrowReturn])
 async def return_borrow(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     id: int,
@@ -66,11 +66,4 @@ async def return_borrow(
         id=id,
         borrow_return=borrow_return,
     )
-    if borrow is None:
-        raise APIException(
-            404,
-            error="Не найдена активная выдача",
-            details="Не найдена активная выдача",
-        )
-    else:
-        return borrow
+    return borrow

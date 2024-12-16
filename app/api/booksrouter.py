@@ -1,19 +1,17 @@
-from typing import Annotated
+from typing import Annotated, Optional
 
 import sqlalchemy.exc
-from fastapi import APIRouter
+from core.errors import APIException
+from core.models import Book, db_helper
+from core.schemas import ApiError, BookCreate, BookRead, BookUpdate
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.crud import books_crud
-from core.errors import APIException
-from core.models import db_helper, Book
-from core.schemas.book import BookRead, BookCreate, BookBase, BookUpdate
-from core.schemas.error import ErrorBase
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter(tags=["Books"])
 router.responses = {
-    404: {"model": ErrorBase, "description": "Not Found"}
+    404: {"model": ApiError, "description": "Not Found"}
 }
 
 
@@ -30,7 +28,7 @@ async def get_books_list(
     )
     return books
 
-@router.get("/{id}", response_model=BookRead)
+@router.get("/{id}", response_model=Optional[BookRead])
 async def get_book_info(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         id: int,
@@ -41,7 +39,7 @@ async def get_book_info(
     )
     return book
 
-@router.post("", response_model=BookCreate)
+@router.post("", response_model=Optional[BookCreate])
 async def add_book(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         book: BookCreate,
@@ -53,7 +51,7 @@ async def add_book(
     return book
 
 
-@router.put("/{id}", response_model=BookBase)
+@router.put("/{id}", response_model=Optional[BookUpdate])
 async def update_book(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         id: int,
@@ -66,7 +64,7 @@ async def update_book(
     )
     return book
 
-@router.delete("{id}")
+@router.delete("/{id}", response_model=Optional[BookRead])
 async def remove_book(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     id: int,

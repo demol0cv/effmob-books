@@ -5,7 +5,7 @@ ignore = ["ANN002","ANN003"]
 exclude = [".venv","__pycache__"]
 
 [lint]
-fixable = ["Q000","COM812", "I001", "D205", "D400", "D413", "W291", "W292"]
+fixable = ["Q000","COM812", "I001", "D205", "D204", "D400", "D413", "W291", "W292"]
 
 [lint.pep8-naming]
 classmethod-decorators = [

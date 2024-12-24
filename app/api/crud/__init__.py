@@ -7,9 +7,7 @@ __all__ = [
 from core.models.author import Author
 from core.models.book import Book
 from core.models.borrow import Borrow
-from .books import BooksCrud
-from .authors import AuthorsCrud
-from .borrows import BorrowsCrud
+from .cruds import AuthorsCrud, BorrowsCrud, BooksCrud
 
 
 authors_crud = AuthorsCrud(Author)

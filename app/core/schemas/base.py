@@ -15,5 +15,4 @@ class ListItemsBase(BaseModel):
 
     @property
     def count(self) -> int:
-        
         return len(self.items_list)
